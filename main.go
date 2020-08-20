@@ -2,15 +2,11 @@ package main
 
 import (
 	"fmt"
-	// "go_library-rsreu-/book"
+	"go_library-rsreu-/library"
 )
 
 func main() {
-	ShowMainMenu()
-}
-
-func ShowMainMenu() {
-	fmt.Println("1) Список книг")
-	fmt.Println("2) Найти книгу")
-	fmt.Println("3) Добавить книгу")
+	bList := make(library.Books, 100)
+	books, err := bList.SearchByTitle("Царевна", library.SortByAuthor)
+	fmt.Println(books, err)
 }
