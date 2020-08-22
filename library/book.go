@@ -124,6 +124,9 @@ func (b Books) Return(login string, bookKey string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	if user != book.HoldBy {
+		return false, errors.New("book was given to another user")
+	}
 	book.HoldBy = nil
 	return true, nil
 }
