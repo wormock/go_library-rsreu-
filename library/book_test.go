@@ -288,7 +288,7 @@ func TestBookRemove(t *testing.T) {
 			name:       "remove error",
 			key:        "33d",
 			admin:      true,
-			errMessage: "can't remove cause this book doesn't exist",
+			errMessage: "book with this key not founded",
 		},
 		{
 			name:       "remove ok",
@@ -305,6 +305,55 @@ func TestBookRemove(t *testing.T) {
 	for _, data := range tests {
 		t.Run(data.name, func(tt *testing.T) {
 			err := books.Remove(data.key, data.admin)
+			if err != nil || data.errMessage != "" {
+				assert.EqualError(tt, err, data.errMessage, "error not equal")
+			}
+		})
+	}
+}
+
+func TestBookChange(t *testing.T) {
+	tests := []struct {
+		name             string
+		key              string
+		title            string
+		author           string
+		yearOfPublishing int
+		errMessage       string
+	}{
+		{
+			name:             "change ok",
+			key:              "32d",
+			title:            "title exmp",
+			author:           "author exmp",
+			yearOfPublishing: 1990,
+			errMessage:       "",
+		},
+		{
+			name:             "change error",
+			key:              "3233d",
+			title:            "title exmp",
+			author:           "author exmp",
+			yearOfPublishing: 1990,
+			errMessage:       "book with this key not founded",
+		},
+		{
+			name:             "change error",
+			key:              "",
+			title:            "title exmp",
+			author:           "author exmp",
+			yearOfPublishing: 1990,
+			errMessage:       "key is empty",
+		},
+	}
+	books := make(Books, len(tests))
+	_, err := books.Add("32d", "Война и мир", "Лев Николаевич Толстой", 2020)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, data := range tests {
+		t.Run(data.name, func(tt *testing.T) {
+			err := books.Change(data.key, data.title, data.author, data.yearOfPublishing)
 			if err != nil || data.errMessage != "" {
 				assert.EqualError(tt, err, data.errMessage, "error not equal")
 			}

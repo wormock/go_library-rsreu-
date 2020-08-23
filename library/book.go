@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sort"
 	"strings"
+	"time"
 )
 
 var (
@@ -37,7 +38,7 @@ func bookKey(key string) string {
 }
 
 // Add book to library
-func (b Books) Add(key, title string, author string, yearOfPublishing int) (*Book, error) {
+func (b Books) Add(key, title, author string, yearOfPublishing int) (*Book, error) {
 	// 1. Проверка на дубликат (по ключу)
 	if b[bookKey(key)] != nil {
 		return nil, ErrBookExist
@@ -63,17 +64,39 @@ func (b Books) Add(key, title string, author string, yearOfPublishing int) (*Boo
 	return book, nil
 }
 
-// Remove book from library Удаление книги по ключу
+// Remove Удаление книги по ключу
 func (b Books) Remove(key string, admin bool) error {
 	if admin {
 		book, err := b.SearchByKey(key)
 		if err != nil {
-			return errors.New("can't remove cause this book doesn't exist")
+			return err
 		}
 		delete(b, book.Key)
 		return nil
 	}
 	return errors.New("you don't have enough permissions")
+}
+
+// Change Изменение параметров книги
+func (b Books) Change(key, title, author string, yearOfPublishing int) error {
+	if key == "" {
+		return errors.New("key is empty")
+	}
+	book, err := b.SearchByKey(key)
+	if err != nil {
+		return err
+	}
+	if title != "" {
+		book.Title = title
+	}
+	if author != "" {
+		book.Author = author
+	}
+	dt := time.Now()
+	if (yearOfPublishing != book.YearOfPublishing) && (yearOfPublishing >= 1500) && (yearOfPublishing <= dt.Year()) {
+		book.YearOfPublishing = yearOfPublishing
+	}
+	return nil
 }
 
 // SearchByTitle Поиск книги по заголовку
