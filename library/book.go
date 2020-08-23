@@ -63,6 +63,19 @@ func (b Books) Add(key, title string, author string, yearOfPublishing int) (*Boo
 	return book, nil
 }
 
+// Remove book from library Удаление книги по ключу
+func (b Books) Remove(key string, admin bool) error {
+	if admin {
+		book, err := b.SearchByKey(key)
+		if err != nil {
+			return errors.New("can't remove cause this book doesn't exist")
+		}
+		delete(b, book.Key)
+		return nil
+	}
+	return errors.New("you don't have enough permissions")
+}
+
 // SearchByTitle Поиск книги по заголовку
 func (b Books) SearchByTitle(title string, sortType sortBy) ([]Book, error) {
 	books := make([]Book, 0, 10)

@@ -270,3 +270,44 @@ func TestBookReturn(t *testing.T) {
 		})
 	}
 }
+
+func TestBookRemove(t *testing.T) {
+	tests := []struct {
+		name       string
+		key        string
+		admin      bool
+		errMessage string
+	}{
+		{
+			name:       "remove error",
+			key:        "32d",
+			admin:      false,
+			errMessage: "you don't have enough permissions",
+		},
+		{
+			name:       "remove error",
+			key:        "33d",
+			admin:      true,
+			errMessage: "can't remove cause this book doesn't exist",
+		},
+		{
+			name:       "remove ok",
+			key:        "32d",
+			admin:      true,
+			errMessage: "",
+		},
+	}
+	books := make(Books, len(tests))
+	_, err := books.Add("32d", "Война и мир", "Лев Николаевич Толстой", 2020)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, data := range tests {
+		t.Run(data.name, func(tt *testing.T) {
+			err := books.Remove(data.key, data.admin)
+			if err != nil || data.errMessage != "" {
+				assert.EqualError(tt, err, data.errMessage, "error not equal")
+			}
+		})
+	}
+}
